@@ -44,8 +44,15 @@ export async function generateTryOnImage(item: ClothingItem): Promise<string> {
   }
 
   try {
-    // Get the model
-    const model = genAI.getGenerativeModel({ model: "gemini-2.0-pro-vision" });
+    // Get the model - using gemini-2.0-flash which is the newest model
+    const model = genAI.getGenerativeModel({ 
+      model: "gemini-2.0-flash",
+      generationConfig: {
+        temperature: 0.9,
+        topP: 0.8,
+        maxOutputTokens: 2048,
+      }
+    });
     
     // Get the image file path
     const uploadsDir = path.join(process.cwd(), 'uploads');
@@ -65,19 +72,24 @@ export async function generateTryOnImage(item: ClothingItem): Promise<string> {
     );
     
     // Create prompt based on user input and image type
-    let promptText = item.promptText || "Create a photorealistic image of a model wearing this clothing item";
+    let promptText = `You are an AI image generation system. Given a clothing item image, create a photorealistic image of a model wearing this clothing item. Return ONLY a base64 encoded image data as data:image/jpeg;base64,DATA_HERE with no other text or explanation.\n\n`;
+    
+    // Add user prompt if provided
+    if (item.promptText) {
+      promptText += `User specifications: ${item.promptText}\n\n`;
+    }
     
     // Add model type and background to prompt if they're not default
     if (item.modelType && item.modelType !== "Tự động (mặc định)") {
-      promptText += `. Model should be ${item.modelType}`;
+      promptText += `Model should be: ${item.modelType}\n`;
     }
     
     if (item.backgroundType && item.backgroundType !== "Studio (mặc định)") {
-      promptText += `. Background should be ${item.backgroundType}`;
+      promptText += `Background should be: ${item.backgroundType}\n`;
     }
     
     // Add instructions for high-quality output
-    promptText += ". Make it photorealistic, high quality, and properly fitted to the model.";
+    promptText += "\nMake the image photorealistic, high quality and properly fitted to the model. Output ONLY the base64 image data starting with 'data:image/jpeg;base64,' with no other text, no markdown formatting, and no explanations.";
     
     // Generate the image
     const result = await model.generateContent([
