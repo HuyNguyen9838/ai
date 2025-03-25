@@ -26,13 +26,14 @@ export default function UploadSection({
   const [preview, setPreview] = useState<string | null>(null);
   const [modelType, setModelType] = useState<string>("Tự động (mặc định)");
   const [backgroundType, setBackgroundType] = useState<string>("Studio (mặc định)");
+  const [promptText, setPromptText] = useState<string>("");
   const [progress, setProgress] = useState<number>(0);
   const progressIntervalRef = useRef<number | null>(null);
 
   // Upload mutation
   const uploadMutation = useMutation({
     mutationFn: async (formData: FormData) => {
-      const response = await apiRequest("POST", "/api/upload", undefined, {
+      const response = await fetch("/api/upload", {
         method: "POST",
         body: formData,
         headers: {
@@ -61,7 +62,9 @@ export default function UploadSection({
   // Generate mutation
   const generateMutation = useMutation({
     mutationFn: async (id: number) => {
-      const response = await apiRequest("POST", `/api/generate/${id}`);
+      const response = await fetch(`/api/generate/${id}`, {
+        method: "POST"
+      });
       return response.json();
     },
     onSuccess: (data: ClothingItem) => {
@@ -135,6 +138,7 @@ export default function UploadSection({
     formData.append("file", file);
     formData.append("modelType", modelType);
     formData.append("backgroundType", backgroundType);
+    formData.append("promptText", promptText);
     
     uploadMutation.mutate(formData);
   };
@@ -277,6 +281,21 @@ export default function UploadSection({
                           <SelectItem value="Trung tính">Trung tính</SelectItem>
                         </SelectContent>
                       </Select>
+                    </div>
+                    
+                    {/* Prompt Input */}
+                    <div>
+                      <Label htmlFor="prompt-text" className="block text-sm font-medium text-gray-700 mb-1">
+                        Lệnh yêu cầu AI
+                      </Label>
+                      <textarea
+                        id="prompt-text"
+                        value={promptText}
+                        onChange={(e) => setPromptText(e.target.value)}
+                        placeholder="Nhập yêu cầu của bạn cho AI. Ví dụ: Mẫu nữ tóc nâu mặc áo này, đứng trên bãi biển với ánh hoàng hôn."
+                        className="w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 min-h-[100px]"
+                      />
+                      <p className="text-xs text-gray-500 mt-1">Mô tả chi tiết để AI tạo ra hình ảnh chính xác hơn.</p>
                     </div>
                   </div>
                   

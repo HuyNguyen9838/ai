@@ -9,6 +9,7 @@ export const clothingItems = pgTable("clothing_items", {
   generatedImage: text("generated_image"),
   modelType: text("model_type").default("Tự động (mặc định)"),
   backgroundType: text("background_type").default("Studio (mặc định)"),
+  promptText: text("prompt_text"),
   status: text("status").default("pending"),
   createdAt: timestamp("created_at").defaultNow(),
 });
@@ -18,6 +19,7 @@ export const insertClothingItemSchema = createInsertSchema(clothingItems).pick({
   originalImage: true,
   modelType: true,
   backgroundType: true,
+  promptText: true,
 });
 
 // Type definitions for our schema
@@ -28,6 +30,7 @@ export type ClothingItem = typeof clothingItems.$inferSelect;
 export const updateClothingItemSchema = createInsertSchema(clothingItems).pick({
   generatedImage: true,
   status: true,
+  promptText: true,
 });
 
 export type UpdateClothingItem = z.infer<typeof updateClothingItemSchema>;
@@ -50,6 +53,7 @@ export const fileUploadSchema = z.object({
     ),
   modelType: z.string().optional(),
   backgroundType: z.string().optional(),
+  promptText: z.string().optional(),
 });
 
 export type FileUpload = z.infer<typeof fileUploadSchema>;
