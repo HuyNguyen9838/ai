@@ -15,8 +15,8 @@ export default function Header() {
         </div>
         
         <nav className="hidden md:flex space-x-6">
-          <Link href="/">
-            <a className="text-gray-700 hover:text-blue-500 transition-colors">Trang chủ</a>
+          <Link href="/" className="text-gray-700 hover:text-blue-500 transition-colors">
+            Trang chủ
           </Link>
           <a href="#features" className="text-gray-700 hover:text-blue-500 transition-colors">Dịch vụ</a>
           <a href="#how-it-works" className="text-gray-700 hover:text-blue-500 transition-colors">Giới thiệu</a>
@@ -36,8 +36,8 @@ export default function Header() {
       {mobileMenuOpen && (
         <div className="md:hidden px-4 py-3 bg-white border-t border-gray-100">
           <nav className="flex flex-col space-y-3">
-            <Link href="/">
-              <a className="text-gray-700 hover:text-blue-500 transition-colors py-1">Trang chủ</a>
+            <Link href="/" className="text-gray-700 hover:text-blue-500 transition-colors py-1">
+              Trang chủ
             </Link>
             <a href="#features" className="text-gray-700 hover:text-blue-500 transition-colors py-1">Dịch vụ</a>
             <a href="#how-it-works" className="text-gray-700 hover:text-blue-500 transition-colors py-1">Giới thiệu</a>
