@@ -1,13 +1,13 @@
-import type { Express, Request, Response } from "express";
+import type { Express, Request, Response, NextFunction } from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
 import multer from "multer";
 import { z } from "zod";
-import { zValidator } from "./validators";
 import { fileUploadSchema, insertClothingItemSchema, updateClothingItemSchema } from "@shared/schema";
 import path from "path";
 import fs from "fs";
 import { fileURLToPath } from "url";
+import { generateTryOnImage, initGeminiAPI } from "./services/gemini";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -20,21 +20,25 @@ const upload = multer({
   },
 });
 
-// Mock AI image generation (this would be replaced with actual Gemini API in production)
-async function generateAIImage(originalImagePath: string, modelType: string, backgroundType: string): Promise<string> {
-  // This is where you would call Gemini API
-  // For this example, we'll return the original image as a placeholder
-  // In a real implementation, you would:
-  // 1. Call Gemini API with the image
-  // 2. Get back the generated image
-  // 3. Save and return the path
-  
-  // Simulating processing time
-  await new Promise(resolve => setTimeout(resolve, 2000));
+// Initialize Gemini API on startup
+initGeminiAPI();
 
-  // In a real implementation, this would be the result from the Gemini API
-  // Here we're just copying the original image to simulate the process
-  return originalImagePath;
+// AI image generation using Gemini API
+async function generateAIImage(clothingItem: any): Promise<string> {
+  try {
+    // Generate the image using Gemini API
+    const base64Image = await generateTryOnImage(clothingItem);
+    
+    // Save the generated image
+    const fileName = `${Date.now()}_generated.jpg`;
+    const imagePath = await storage.saveGeneratedImage(`data:image/jpeg;base64,${base64Image}`, fileName);
+    
+    return imagePath;
+  } catch (error) {
+    console.error("Error generating image with Gemini:", error);
+    // Fallback to original image if there's an error
+    return clothingItem.originalImage;
+  }
 }
 
 export async function registerRoutes(app: Express): Promise<Server> {
@@ -58,7 +62,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     // Serve files from the uploads directory
     const options = {
       root: uploadsDir,
-      dotfiles: 'deny',
+      dotfiles: "deny" as "deny",
       headers: {
         'x-timestamp': Date.now(),
         'x-sent': true
@@ -89,9 +93,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
       // Convert file buffer to base64
       const base64Data = `data:${req.file.mimetype};base64,${req.file.buffer.toString("base64")}`;
       
-      // Extract model and background type from request
+      // Extract model, background type and prompt text from request
       const modelType = req.body.modelType || "Tự động (mặc định)";
       const backgroundType = req.body.backgroundType || "Studio (mặc định)";
+      const promptText = req.body.promptText || "";
 
       // Save the image
       const fileName = await storage.saveUploadedImage(base64Data, req.file.originalname);
@@ -100,7 +105,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const clothingItem = await storage.createClothingItem({
         originalImage: `original/${fileName}`,
         modelType,
-        backgroundType
+        backgroundType,
+        promptText
       });
 
       return res.status(201).json(clothingItem);
@@ -134,13 +140,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
         // Get original image path
         const originalImagePath = clothingItem.originalImage;
         
-        // This is where you would call the AI service to generate the image
-        // For this MVP, we'll simulate this with a delay and return the original image path
-        const generatedImagePath = await generateAIImage(
-          originalImagePath,
-          clothingItem.modelType,
-          clothingItem.backgroundType
-        );
+        // Call the AI service to generate the image with Gemini
+        const generatedImagePath = await generateAIImage(clothingItem);
 
         // Update the clothing item with the generated image
         const updatedItem = await storage.updateClothingItem(id, {
@@ -186,9 +187,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
   return httpServer;
 }
 
-// Helper function for validating request
-function zValidator<T extends z.ZodTypeAny>(schema: T) {
-  return async (req: Request, res: Response, next: Function) => {
+// Helper function for validating request (local version for api routes)
+function validateRequest<T extends z.ZodTypeAny>(schema: T) {
+  return async (req: Request, res: Response, next: NextFunction) => {
     try {
       req.body = await schema.parseAsync(req.body);
       next();
