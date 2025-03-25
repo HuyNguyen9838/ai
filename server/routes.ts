@@ -36,8 +36,8 @@ async function generateAIImage(clothingItem: any): Promise<string> {
     return imagePath;
   } catch (error) {
     console.error("Error generating image with Gemini:", error);
-    // Fallback to original image if there's an error
-    return clothingItem.originalImage;
+    // Don't fallback to original image, throw the error instead
+    throw error;
   }
 }
 
