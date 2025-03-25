@@ -28,6 +28,11 @@ export default function Home() {
     setSelectedItem(null);
     setActiveStep("upload");
   };
+  
+  const handleRegenerate = (item: ClothingItem) => {
+    setSelectedItem(item);
+    setActiveStep("processing");
+  };
 
   return (
     <div className="min-h-screen flex flex-col">
@@ -51,6 +56,7 @@ export default function Home() {
         <ResultsSection 
           item={selectedItem} 
           onReset={handleReset}
+          onRegenerate={handleRegenerate}
         />
       )}
       

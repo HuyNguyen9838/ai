@@ -62,7 +62,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     // Serve files from the uploads directory
     const options = {
       root: uploadsDir,
-      dotfiles: "deny" as "deny",
+      dotfiles: "deny" as const,
       headers: {
         'x-timestamp': Date.now(),
         'x-sent': true

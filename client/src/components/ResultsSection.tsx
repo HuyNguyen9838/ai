@@ -6,9 +6,10 @@ import { Separator } from "@/components/ui/separator";
 interface ResultsSectionProps {
   item: ClothingItem;
   onReset: () => void;
+  onRegenerate?: (item: ClothingItem) => void;
 }
 
-export default function ResultsSection({ item, onReset }: ResultsSectionProps) {
+export default function ResultsSection({ item, onReset, onRegenerate }: ResultsSectionProps) {
   // Function to handle image download
   const handleDownload = () => {
     // Create anchor element
@@ -97,7 +98,9 @@ export default function ResultsSection({ item, onReset }: ResultsSectionProps) {
               </Button>
               
               <Button 
+                onClick={() => onRegenerate && onRegenerate(item)}
                 className="inline-flex items-center gap-2 bg-blue-500 hover:bg-blue-600 text-white"
+                disabled={!onRegenerate}
               >
                 <RefreshCw className="h-5 w-5" />
                 <span>Tạo lại</span>
