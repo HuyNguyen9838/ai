@@ -95,6 +95,9 @@ export default function UploadSection({
         }
       }
       
+      // Set the error message for displaying in the UI
+      setGenerationError(errorMessage);
+      
       toast({
         title: "Lỗi tạo hình ảnh",
         description: errorMessage,
@@ -164,11 +167,24 @@ export default function UploadSection({
   const resetForm = () => {
     setFile(null);
     setPreview(null);
+    setGenerationError(null);
+  };
+  
+  const retryGeneration = () => {
+    if (processingItem) {
+      setGenerationError(null);
+      setProgress(0);
+      generateMutation.mutate(processingItem.id);
+    }
   };
 
   // Start progress animation when processing
   useEffect(() => {
     if (processingItem) {
+      // Reset any previous error
+      setGenerationError(null);
+      
+      // Reset progress
       setProgress(0);
       
       if (progressIntervalRef.current) {
@@ -347,7 +363,7 @@ export default function UploadSection({
             )}
             
             {/* Processing State */}
-            {processingItem && (
+            {processingItem && !generationError && (
               <div className="text-center py-8">
                 <div className="w-20 h-20 mx-auto mb-6 relative">
                   <div className="w-full h-full rounded-full border-4 border-gray-200"></div>
@@ -370,6 +386,56 @@ export default function UploadSection({
                 </div>
                 
                 <p className="text-sm text-gray-500">Quá trình này có thể mất từ 15-30 giây</p>
+              </div>
+            )}
+            
+            {/* Error State */}
+            {processingItem && generationError && (
+              <div className="text-center py-8">
+                <div className="w-20 h-20 mx-auto mb-6 relative bg-red-50 rounded-full flex items-center justify-center">
+                  <svg xmlns="http://www.w3.org/2000/svg" className="h-12 w-12 text-red-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                  </svg>
+                </div>
+                
+                <h3 className="text-lg font-semibold text-gray-800 mb-2">Đã xảy ra lỗi</h3>
+                <div className="bg-red-50 border border-red-200 rounded-lg p-4 mb-6 max-w-lg mx-auto">
+                  <p className="text-red-800">{generationError}</p>
+                </div>
+                
+                <div className="flex flex-col sm:flex-row gap-3 justify-center">
+                  <Button
+                    type="button"
+                    variant="outline"
+                    className="py-2 px-4"
+                    onClick={() => {
+                      if (onItemProcessed && processingItem) {
+                        // Return to previous view
+                        onItemProcessed({
+                          ...processingItem,
+                          status: "failed"
+                        });
+                      }
+                    }}
+                  >
+                    Quay lại
+                  </Button>
+                  <Button
+                    type="button"
+                    className="py-2 px-4 bg-blue-500 hover:bg-blue-600 text-white"
+                    onClick={retryGeneration}
+                    disabled={generateMutation.isPending}
+                  >
+                    {generateMutation.isPending ? (
+                      <RefreshCw className="h-5 w-5 animate-spin" />
+                    ) : (
+                      <>
+                        <RefreshCw className="h-5 w-5 mr-2" />
+                        <span>Thử lại</span>
+                      </>
+                    )}
+                  </Button>
+                </div>
               </div>
             )}
           </div>
