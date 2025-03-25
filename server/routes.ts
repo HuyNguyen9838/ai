@@ -160,7 +160,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
       }
     } catch (error) {
       console.error("Generation error:", error);
-      return res.status(500).json({ message: "Failed to generate image" });
+      return res.status(500).json({ 
+        message: "Failed to generate image", 
+        error: error instanceof Error ? error.message : "Unknown error"
+      });
     }
   });
 

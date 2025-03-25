@@ -60,13 +60,40 @@ export function useGenerate() {
         description: "Your AI image has been generated successfully.",
       });
     },
-    onError: (error) => {
+    onError: (error: any) => {
       stopProgress(false);
-      toast({
-        title: "Generation failed",
-        description: "There was an error generating your image. Please try again.",
-        variant: "destructive",
-      });
+      
+      // Extract more specific error message if available
+      let errorMessage = "There was an error generating your image. Please try again.";
+      if (error?.response?.json) {
+        // Try to parse the error response from the server
+        error.response.json().then((data: any) => {
+          if (data?.error) {
+            errorMessage = data.error;
+          }
+          // Display toast with detailed error message
+          toast({
+            title: "Generation failed",
+            description: errorMessage,
+            variant: "destructive",
+          });
+        }).catch(() => {
+          // If parsing fails, show the default error
+          toast({
+            title: "Generation failed",
+            description: errorMessage,
+            variant: "destructive",
+          });
+        });
+      } else {
+        // If no response data is available, show the default error
+        toast({
+          title: "Generation failed",
+          description: errorMessage,
+          variant: "destructive",
+        });
+      }
+      
       console.error("Generation error:", error);
     },
   });

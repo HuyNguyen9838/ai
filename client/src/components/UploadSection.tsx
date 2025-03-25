@@ -28,6 +28,7 @@ export default function UploadSection({
   const [backgroundType, setBackgroundType] = useState<string>("Studio (mặc định)");
   const [promptText, setPromptText] = useState<string>("");
   const [progress, setProgress] = useState<number>(0);
+  const [generationError, setGenerationError] = useState<string | null>(null);
   const progressIntervalRef = useRef<number | null>(null);
 
   // Upload mutation
@@ -77,12 +78,29 @@ export default function UploadSection({
         description: "Hình ảnh AI đã được tạo thành công!",
       });
     },
-    onError: (error) => {
+    onError: (error: any) => {
+      // Extract detailed error message if available
+      let errorMessage = "Không thể tạo hình ảnh. Vui lòng thử lại.";
+      
+      // Try to get more specific error details
+      if (error?.response) {
+        try {
+          // Parse the error response if it exists
+          const responseData = error.response.data;
+          if (responseData?.error) {
+            errorMessage = `Lỗi Gemini API: ${responseData.error}`;
+          }
+        } catch (e) {
+          console.error("Error parsing error response:", e);
+        }
+      }
+      
       toast({
-        title: "Lỗi",
-        description: "Không thể tạo hình ảnh. Vui lòng thử lại.",
+        title: "Lỗi tạo hình ảnh",
+        description: errorMessage,
         variant: "destructive",
       });
+      
       console.error("Generate error:", error);
     }
   });
