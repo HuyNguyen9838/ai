@@ -100,7 +100,7 @@ export class MemStorage implements IStorage {
     const filePath = path.join(GENERATED_DIR, uniqueFileName);
     
     await fs.promises.writeFile(filePath, buffer);
-    return uniqueFileName;
+    return `generated/${uniqueFileName}`; // Return path relative to uploads directory
   }
 }
 
