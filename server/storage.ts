@@ -96,11 +96,11 @@ export class MemStorage implements IStorage {
     const base64Image = base64Data.replace(/^data:image\/\w+;base64,/, "");
     const buffer = Buffer.from(base64Image, "base64");
     
-    const uniqueFileName = `${Date.now()}-${fileName}`;
+    const uniqueFileName = `${Date.now()}_generated.jpg`;
     const filePath = path.join(GENERATED_DIR, uniqueFileName);
     
     await fs.promises.writeFile(filePath, buffer);
-    return `generated/${uniqueFileName}`; // Return path relative to uploads directory
+    return `generated/${uniqueFileName}`;
   }
 }
 
