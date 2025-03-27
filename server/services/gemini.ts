@@ -44,9 +44,9 @@ export async function generateTryOnImage(item: ClothingItem): Promise<string> {
   }
 
   try {
-    // Get the model - using gemini-1.5-pro which supports image input
+    // Get the model - using gemini-2.0-pro-vision which is the latest model
     const model = genAI.getGenerativeModel({ 
-      model: "gemini-1.5-pro-vision",
+      model: "gemini-2.0-pro-vision",
       generationConfig: {
         temperature: 0.9,
         topP: 0.8,
