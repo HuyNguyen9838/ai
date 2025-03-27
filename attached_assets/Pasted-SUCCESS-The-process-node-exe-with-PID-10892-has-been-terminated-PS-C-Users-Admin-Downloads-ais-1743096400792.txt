@@ -1,0 +1,129 @@
+SUCCESS: The process "node.exe" with PID 10892 has been terminated.
+PS C:\Users\Admin\Downloads\aishop\AIVirtualTryOn> npm run dev
+>> 
+
+> rest-express@1.0.0 dev
+> tsx server/index.ts
+
+12:23:48 AM [express] serving on port 5000
+12:24:08 AM [express] POST /api/upload 201 in 17ms :: {"id":1,"originalImage":"original/1743096248639…
+Đang tạo hình ảnh cho sản phẩm 1 với:
+- Loại người mẫu: Tự động (mặc định)
+- Nền: Studio (mặc định)
+- Độ dài prompt: 0 ký tự
+Đang tạo hình ảnh với Gemini API...
+Sử dụng mô hình: gemini-2.0-flash-exp-image-generation
+Processing image: C:\Users\Admin\Downloads\aishop\AIVirtualTryOn\uploads\original\1743096248639-ta__i_xua__ng.jpg
+Kích thước hình ảnh đã phù hợp, không cần tối ưu
+Đã tạo ảnh tối ưu tại: C:\Users\Admin\Downloads\aishop\AIVirtualTryOn\uploads\original\1743096248639-ta__i_xua__ng-optimized.jpg
+Generated prompt: Generate a photorealistic image of a person wearing this clothing item. I'd like to see how it would look on a real model.
+
+Important:
+- Return ONLY an image of a human model wearing this clothing item
+- The output must be a standalone jpg/png image
+- Do not include any text descriptions or explanations in your response
+- Generate a new image with a real person wearing exactly this item of clothing
+- Make the final image clear, high-quality, and in a standard fashion catalog style
+
+Đang gửi yêu cầu tạo hình ảnh đến Gemini API...
+Đang đợi phản hồi (quá trình này có thể mất 1-2 phút)...
+Lỗi khi tạo hình ảnh với Gemini: GoogleGenerativeAIFetchError: [GoogleGenerativeAI Error]: Error fetching from https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash-exp-image-generation:generateContent: [400 Bad Request] API key not valid. Please pass a valid API key. [{"@type":"type.googleapis.com/google.rpc.ErrorInfo","reason":"API_KEY_INVALID","domain":"googleapis.com","metadata":{"service":"generativelanguage.googleapis.com"}},{"@type":"type.googleapis.com/google.rpc.LocalizedMessage","locale":"en-US","message":"API key not valid. Please pass a valid API key."}]
+    at handleResponseNotOk (file:///C:/Users/Admin/Downloads/aishop/AIVirtualTryOn/node_modules/@google/generative-ai/dist/index.mjs:432:11)
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at async makeRequest (file:///C:/Users/Admin/Downloads/aishop/AIVirtualTryOn/node_modules/@google/generative-ai/dist/index.mjs:401:9)
+    at async generateContent (file:///C:/Users/Admin/Downloads/aishop/AIVirtualTryOn/node_modules/@google/generative-ai/dist/index.mjs:865:22)
+    at async generateTryOnImage (C:\Users\Admin\Downloads\aishop\AIVirtualTryOn\server\services\gemini.ts:309:20)
+    at async generateAIImage (C:\Users\Admin\Downloads\aishop\AIVirtualTryOn\server\routes.ts:50:21)
+    at async <anonymous> (C:\Users\Admin\Downloads\aishop\AIVirtualTryOn\server\routes.ts:221:36) {
+  status: 400,
+  statusText: 'Bad Request',
+  errorDetails: [
+    {
+      '@type': 'type.googleapis.com/google.rpc.ErrorInfo',
+      reason: 'API_KEY_INVALID',
+      domain: 'googleapis.com',
+      metadata: [Object]
+    },
+    {
+      '@type': 'type.googleapis.com/google.rpc.LocalizedMessage',
+      locale: 'en-US',
+      message: 'API key not valid. Please pass a valid API key.'
+    }
+  ]
+}
+Lỗi khi tạo hình ảnh với Gemini: GoogleGenerativeAIFetchError: [GoogleGenerativeAI Error]: Error fetching from https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash-exp-image-generation:generateContent: [400 Bad Request] API key not valid. Please pass a valid API key. [{"@type":"type.googleapis.com/google.rpc.ErrorInfo","reason":"API_KEY_INVALID","domain":"googleapis.com","metadata":{"service":"generativelanguage.googleapis.com"}},{"@type":"type.googleapis.com/google.rpc.LocalizedMessage","locale":"en-US","message":"API key not valid. Please pass a valid API key."}]
+    at handleResponseNotOk (file:///C:/Users/Admin/Downloads/aishop/AIVirtualTryOn/node_modules/@google/generative-ai/dist/index.mjs:432:11)
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at async makeRequest (file:///C:/Users/Admin/Downloads/aishop/AIVirtualTryOn/node_modules/@google/generative-ai/dist/index.mjs:401:9)
+    at async generateContent (file:///C:/Users/Admin/Downloads/aishop/AIVirtualTryOn/node_modules/@google/generative-ai/dist/index.mjs:865:22)
+    at async generateTryOnImage (C:\Users\Admin\Downloads\aishop\AIVirtualTryOn\server\services\gemini.ts:309:20)
+    at async generateAIImage (C:\Users\Admin\Downloads\aishop\AIVirtualTryOn\server\routes.ts:50:21)
+    at async <anonymous> (C:\Users\Admin\Downloads\aishop\AIVirtualTryOn\server\routes.ts:221:36) {
+  status: 400,
+  statusText: 'Bad Request',
+  errorDetails: [
+    {
+      '@type': 'type.googleapis.com/google.rpc.ErrorInfo',
+      reason: 'API_KEY_INVALID',
+      domain: 'googleapis.com',
+      metadata: [Object]
+    },
+    {
+      '@type': 'type.googleapis.com/google.rpc.LocalizedMessage',
+      locale: 'en-US',
+      message: 'API key not valid. Please pass a valid API key.'
+    }
+  ]
+}
+Error generating image: GoogleGenerativeAIFetchError: [GoogleGenerativeAI Error]: Error fetching from https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash-exp-image-generation:generateContent: [400 Bad Request] API key not valid. Please pass a valid API key. [{"@type":"type.googleapis.com/google.rpc.ErrorInfo","reason":"API_KEY_INVALID","domain":"googleapis.com","metadata":{"service":"generativelanguage.googleapis.com"}},{"@type":"type.googleapis.com/google.rpc.LocalizedMessage","locale":"en-US","message":"API key not valid. Please pass a valid API key."}]
+    at handleResponseNotOk (file:///C:/Users/Admin/Downloads/aishop/AIVirtualTryOn/node_modules/@google/generative-ai/dist/index.mjs:432:11)
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at async makeRequest (file:///C:/Users/Admin/Downloads/aishop/AIVirtualTryOn/node_modules/@google/generative-ai/dist/index.mjs:401:9)
+    at async generateContent (file:///C:/Users/Admin/Downloads/aishop/AIVirtualTryOn/node_modules/@google/generative-ai/dist/index.mjs:865:22)
+    at async generateTryOnImage (C:\Users\Admin\Downloads\aishop\AIVirtualTryOn\server\services\gemini.ts:309:20)
+    at async generateAIImage (C:\Users\Admin\Downloads\aishop\AIVirtualTryOn\server\routes.ts:50:21)
+    at async <anonymous> (C:\Users\Admin\Downloads\aishop\AIVirtualTryOn\server\routes.ts:221:36) {
+  status: 400,
+  statusText: 'Bad Request',
+  errorDetails: [
+    {
+      '@type': 'type.googleapis.com/google.rpc.ErrorInfo',
+      reason: 'API_KEY_INVALID',
+      domain: 'googleapis.com',
+      metadata: [Object]
+    },
+    {
+      '@type': 'type.googleapis.com/google.rpc.LocalizedMessage',
+      locale: 'en-US',
+      message: 'API key not valid. Please pass a valid API key.'
+    }
+  ]
+}
+Generation error: GoogleGenerativeAIFetchError: [GoogleGenerativeAI Error]: Error fetching from https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash-exp-image-generation:generateContent: [400 Bad Request] API key not valid. Please pass a valid API key. [{"@type":"type.googleapis.com/google.rpc.ErrorInfo","reason":"API_KEY_INVALID","domain":"googleapis.com","metadata":{"service":"generativelanguage.googleapis.com"}},{"@type":"type.googleapis.com/google.rpc.LocalizedMessage","locale":"en-US","message":"API key not valid. Please pass a valid API key."}]
+    at handleResponseNotOk (file:///C:/Users/Admin/Downloads/aishop/AIVirtualTryOn/node_modules/@google/generative-ai/dist/index.mjs:432:11)
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at async makeRequest (file:///C:/Users/Admin/Downloads/aishop/AIVirtualTryOn/node_modules/@google/generative-ai/dist/index.mjs:401:9)
+    at async generateContent (file:///C:/Users/Admin/Downloads/aishop/AIVirtualTryOn/node_modules/@google/generative-ai/dist/index.mjs:865:22)
+    at async generateTryOnImage (C:\Users\Admin\Downloads\aishop\AIVirtualTryOn\server\services\gemini.ts:309:20)
+    at async generateAIImage (C:\Users\Admin\Downloads\aishop\AIVirtualTryOn\server\routes.ts:50:21)
+    at async <anonymous> (C:\Users\Admin\Downloads\aishop\AIVirtualTryOn\server\routes.ts:221:36) {
+  status: 400,
+  statusText: 'Bad Request',
+  errorDetails: [
+    {
+      '@type': 'type.googleapis.com/google.rpc.ErrorInfo',
+      reason: 'API_KEY_INVALID',
+      domain: 'googleapis.com',
+      metadata: [Object]
+    },
+    {
+      '@type': 'type.googleapis.com/google.rpc.LocalizedMessage',
+      locale: 'en-US',
+      message: 'API key not valid. Please pass a valid API key.'
+    }
+  ]
+}
+12:24:10 AM [express] POST /api/generate/1 500 in 1747ms :: {"message":"Failed to generate image","er…
+Accessed: /undefined
+Không tìm thấy file: C:\Users\Admin\Downloads\aishop\AIVirtualTryOn\uploads\undefined
+12:24:10 AM [express] GET /api/uploads/undefined 404 in 2ms
