@@ -70,7 +70,7 @@ const CURRENT_MODEL = {
 // Khởi tạo Gemini API
 let genAI;
 function initGeminiAPI() {
-  const apiKey = process.env.GEMINI_API_KEY;
+  const apiKey = import.meta.env.VITE_GEMINI_API_KEY;
   
   if (!apiKey) {
     console.error("GEMINI_API_KEY không được cung cấp. Tính năng tạo hình ảnh sẽ không hoạt động.");
