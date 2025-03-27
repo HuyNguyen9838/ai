@@ -8,7 +8,9 @@ type ModelConfig = {
   modelName: string;
   temperature: number;
   topP: number;
+  topK?: number;
   maxOutputTokens: number;
+  responseModalities?: string[];
 };
 
 // Danh sách các mô hình
@@ -24,11 +26,25 @@ const GEMINI_MODELS = {
     temperature: 0.4,
     topP: 0.8,
     maxOutputTokens: 4096
+  },
+  GEMINI_2_0_FLASH: {
+    modelName: "gemini-2.0-flash",
+    temperature: 0.2, 
+    topP: 0.8,
+    maxOutputTokens: 8192
+  },
+  GEMINI_2_0_VISION: {
+    modelName: "gemini-2.0-flash-exp-image-generation",
+    temperature: 0.4,
+    topP: 1.0,
+    topK: 32,
+    maxOutputTokens: 2048,
+    responseModalities: ["TEXT", "IMAGE"]
   }
 };
 
 // Mô hình đang sử dụng - dễ dàng thay đổi nếu cần
-const CURRENT_MODEL = GEMINI_MODELS.GEMINI_1_5_FLASH;
+const CURRENT_MODEL = GEMINI_MODELS.GEMINI_2_0_VISION;
 
 // Initialize Google Generative AI with API key
 let genAI: GoogleGenerativeAI;
@@ -72,13 +88,26 @@ export async function generateTryOnImage(item: ClothingItem): Promise<string> {
 
   try {
     // Sử dụng cấu hình mô hình từ thiết lập
+    console.log(`Sử dụng mô hình: ${CURRENT_MODEL.modelName}`);
+    
+    const generationConfig: any = {
+      temperature: CURRENT_MODEL.temperature,
+      topP: CURRENT_MODEL.topP,
+      maxOutputTokens: CURRENT_MODEL.maxOutputTokens
+    };
+    
+    // Thêm cấu hình đặc biệt cho model tạo hình ảnh
+    if (CURRENT_MODEL.topK) {
+      generationConfig.topK = CURRENT_MODEL.topK;
+    }
+    
+    if (CURRENT_MODEL.responseModalities) {
+      generationConfig.responseModalities = CURRENT_MODEL.responseModalities;
+    }
+    
     const model = genAI.getGenerativeModel({ 
       model: CURRENT_MODEL.modelName,
-      generationConfig: {
-        temperature: CURRENT_MODEL.temperature,
-        topP: CURRENT_MODEL.topP,
-        maxOutputTokens: CURRENT_MODEL.maxOutputTokens
-      }
+      generationConfig
     });
     
     // Get the image file path

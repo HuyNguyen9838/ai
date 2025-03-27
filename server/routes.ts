@@ -7,7 +7,8 @@ import { fileUploadSchema, insertClothingItemSchema, updateClothingItemSchema } 
 import path from "path";
 import fs from "fs";
 import { fileURLToPath } from "url";
-import { generateTryOnImage, initGeminiAPI } from "./services/gemini";
+import { generateTryOnImage as generateGeminiImage, initGeminiAPI } from "./services/gemini";
+import { generateTryOnImage as generateClaudeImage, initClaudeAPI } from "./services/claude";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -20,22 +21,46 @@ const upload = multer({
   },
 });
 
-// Initialize Gemini API on startup
-initGeminiAPI();
+// Khởi tạo API ngay khi khởi động
+let isClaudeAvailable = initClaudeAPI();
+let isGeminiAvailable = initGeminiAPI();
 
-// AI image generation using Gemini API
+// AI image generation using available APIs
 async function generateAIImage(clothingItem: any): Promise<string> {
   try {
     console.log(`Generating image for clothing item ${clothingItem.id} with:
 - Model type: ${clothingItem.modelType}
 - Background: ${clothingItem.backgroundType}
 - Prompt length: ${clothingItem.promptText?.length || 0} characters`);
+
+    let base64Image: string | null = null;
     
-    // Generate the image using Gemini API
-    const base64Image = await generateTryOnImage(clothingItem);
+    // Thử sử dụng Claude trước nếu có
+    if (isClaudeAvailable) {
+      try {
+        console.log("Trying to generate image using Claude...");
+        base64Image = await generateClaudeImage(clothingItem);
+        console.log("Successfully generated image with Claude");
+      } catch (claudeError) {
+        console.error("Error generating image with Claude:", claudeError);
+        base64Image = null;
+      }
+    }
+    
+    // Nếu Claude không khả dụng hoặc thất bại, thử dùng Gemini
+    if (!base64Image && isGeminiAvailable) {
+      try {
+        console.log("Falling back to Gemini for image generation...");
+        base64Image = await generateGeminiImage(clothingItem);
+        console.log("Successfully generated image with Gemini");
+      } catch (geminiError) {
+        console.error("Error generating image with Gemini:", geminiError);
+        throw geminiError; // Ném lỗi nếu cả hai API đều thất bại
+      }
+    }
     
     if (!base64Image) {
-      throw new Error("Không nhận được dữ liệu hình ảnh từ API");
+      throw new Error("Không nhận được dữ liệu hình ảnh từ bất kỳ API nào");
     }
     
     console.log(`Received base64 image data (length: ${base64Image.length} characters)`);
@@ -48,7 +73,7 @@ async function generateAIImage(clothingItem: any): Promise<string> {
     
     return imagePath;
   } catch (error) {
-    console.error("Error generating image with Gemini:", error);
+    console.error("Error generating image:", error);
     // Don't fallback to original image, throw the error instead
     throw error;
   }
