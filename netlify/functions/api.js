@@ -1,34 +1,56 @@
+
 const express = require('express');
 const serverless = require('serverless-http');
-const { GoogleGenerativeAI } = require("@google/generative-ai");
+const multer = require('multer');
+const path = require('path');
+const fs = require('fs');
+
 const app = express();
-
-// Middleware
-app.use(express.json());
-
-// Khởi tạo Gemini API
-const genAI = new GoogleGenerativeAI(process.env.VITE_GEMINI_API_KEY);
-
-// API endpoints
-app.post('/api/generate', async (req, res) => {
-  try {
-    const model = genAI.getGenerativeModel({ model: "gemini-pro-vision" });
-    const result = await model.generateContent(req.body.prompt);
-    const response = await result.response;
-    res.json({ generated: response.text() });
-  } catch (error) {
-    console.error("Lỗi khi gọi Gemini API:", error);
-    res.status(500).json({ error: error.message });
+const upload = multer({
+  storage: multer.memoryStorage(),
+  limits: {
+    fileSize: 10 * 1024 * 1024, // 10MB limit
   }
 });
 
-// Error handler (keeping original error handling)
-app.use((err, req, res, next) => {
-  console.error('API error:', err);
-  res.status(err.status || 500).json({
-    message: err.message || 'Lỗi máy chủ nội bộ'
-  });
+// Parse JSON bodies
+app.use(express.json());
+
+// Ensure upload directories exist
+const UPLOAD_DIR = path.join('/tmp', 'uploads');
+const ORIGINAL_DIR = path.join(UPLOAD_DIR, 'original');
+const GENERATED_DIR = path.join(UPLOAD_DIR, 'generated');
+
+[UPLOAD_DIR, ORIGINAL_DIR, GENERATED_DIR].forEach((dir) => {
+  if (!fs.existsSync(dir)) {
+    fs.mkdirSync(dir, { recursive: true });
+  }
 });
 
-// Export handler function
+// Handle file upload
+app.post('/api/upload', upload.single('file'), async (req, res) => {
+  try {
+    if (!req.file) {
+      return res.status(400).json({ message: "No file uploaded" });
+    }
+
+    const fileName = `${Date.now()}-${req.file.originalname}`;
+    const filePath = path.join(ORIGINAL_DIR, fileName);
+    
+    await fs.promises.writeFile(filePath, req.file.buffer);
+
+    res.status(201).json({
+      id: Date.now(),
+      originalImage: `original/${fileName}`,
+      status: 'pending'
+    });
+  } catch (error) {
+    console.error('Upload error:', error);
+    res.status(500).json({ message: 'Failed to upload file' });
+  }
+});
+
+// Serve static files
+app.use('/api/uploads', express.static(UPLOAD_DIR));
+
 exports.handler = serverless(app);

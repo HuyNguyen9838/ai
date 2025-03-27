@@ -11,8 +11,9 @@
   force = true
   
 [functions]
-  external_node_modules = ["express", "@google/generative-ai"]
+  external_node_modules = ["express", "@google/generative-ai", "multer"]
   node_bundler = "esbuild"
+  included_files = ["uploads/**"]
 
 [[redirects]]
   from = "/*"
