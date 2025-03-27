@@ -123,7 +123,7 @@ export default function ResultsSection({ item, onReset, onRegenerate }: ResultsS
                     </div>
                     <div className="grid grid-cols-3 gap-1">
                       <span className="text-gray-500">Model AI:</span>
-                      <span className="col-span-2 font-medium">Gemini 2.0 Flash Exp</span>
+                      <span className="col-span-2 font-medium">AI 2.0</span>
                     </div>
                     <div className="grid grid-cols-3 gap-1">
                       <span className="text-gray-500">Ngày tạo:</span>
