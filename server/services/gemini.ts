@@ -48,9 +48,11 @@ export async function generateTryOnImage(item: ClothingItem): Promise<string> {
     const model = genAI.getGenerativeModel({ 
       model: "gemini-2.0-flash",
       generationConfig: {
-        temperature: 0.9,
-        topP: 0.8,
+        temperature: 0.2,        // Giảm temperature cho kết quả chính xác hơn
+        topP: 1.0,               // Tăng giá trị topP để mở rộng sáng tạo nhưng vẫn kiểm soát
         maxOutputTokens: 8192,
+        topK: 40,                // Thêm tham số topK
+        responseStyle: "natural" // Sử dụng phong cách phản hồi tự nhiên
       }
     });
     
@@ -72,13 +74,14 @@ export async function generateTryOnImage(item: ClothingItem): Promise<string> {
     );
     
     // Create prompt based on user input and image type - optimized for Gemini 2.0 Flash
-    let promptText = `Edit this product image to show it worn by a realistic model.
+    let promptText = `Turn this floating clothing item into a realistic model wearing it.
 
 Instructions:
-1. Generate a high-quality, photorealistic image showing a model wearing this exact clothing item
-2. The model should be positioned in a natural, catalog-style pose
-3. The clothing should fit the model perfectly and look natural
-4. Maintain a professional e-commerce style similar to major fashion retailers
+1. Create a photorealistic image of a human model wearing this exact clothing item
+2. Add a full-body model underneath the clothing (don't just keep the mannequin/hanging display)
+3. Position the model in a natural fashion catalog pose
+4. Keep the professional studio lighting and clean background
+5. Make sure the clothing item is clearly visible as shown in the original image
 `;
     
     // Add user prompt if provided
