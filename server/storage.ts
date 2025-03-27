@@ -84,7 +84,15 @@ export class MemStorage implements IStorage {
     const base64Image = base64Data.replace(/^data:image\/\w+;base64,/, "");
     const buffer = Buffer.from(base64Image, "base64");
     
-    const uniqueFileName = `${Date.now()}-${fileName}`;
+    // Xử lý tên file để đảm bảo an toàn cho URL
+    // Loại bỏ dấu cách và ký tự đặc biệt
+    const safeFileName = fileName
+      .normalize('NFD')                     // Chuẩn hóa Unicode
+      .replace(/[\u0300-\u036f]/g, '')     // Loại bỏ dấu trong tiếng Việt
+      .replace(/[^\w.-]/g, '_')            // Thay thế ký tự đặc biệt bằng dấu gạch dưới
+      .replace(/\s+/g, '_');               // Thay thế khoảng trắng bằng dấu gạch dưới
+    
+    const uniqueFileName = `${Date.now()}-${safeFileName}`;
     const filePath = path.join(ORIGINAL_DIR, uniqueFileName);
     
     await fs.promises.writeFile(filePath, buffer);

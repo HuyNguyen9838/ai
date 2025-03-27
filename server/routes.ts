@@ -93,21 +93,65 @@ export async function registerRoutes(app: Express): Promise<Server> {
   },
   (req, res, next) => {
     // Serve files from the uploads directory
-    const options = {
-      root: uploadsDir,
-      dotfiles: "deny" as const,
-      headers: {
-        'x-timestamp': Date.now(),
-        'x-sent': true
+    try {
+      const options = {
+        root: uploadsDir,
+        dotfiles: "deny" as const,
+        headers: {
+          'x-timestamp': Date.now(),
+          'x-sent': true
+        }
+      };
+      
+      // Giải mã URL để xử lý các ký tự đặc biệt UTF-8
+      const decodedUrl = decodeURIComponent(req.url);
+      const fileName = decodedUrl.slice(1); // Remove leading slash
+      
+      const filePath = path.join(uploadsDir, fileName);
+      
+      // Kiểm tra xem file có tồn tại không
+      if (fs.existsSync(filePath)) {
+        res.sendFile(fileName, options, (err) => {
+          if (err) {
+            next(err);
+          }
+        });
+      } else {
+        // Nếu không tìm thấy file, thử tìm file phù hợp trong thư mục
+        const folderPath = path.dirname(filePath);
+        
+        if (fs.existsSync(folderPath)) {
+          const filesInFolder = fs.readdirSync(folderPath);
+          const fileNameWithoutPath = path.basename(fileName);
+          
+          // Tìm file có ID tương tự (thường là phần đầu của tên file)
+          const idPrefix = fileNameWithoutPath.split('-')[0];
+          const matchingFile = filesInFolder.find(file => file.startsWith(idPrefix));
+          
+          if (matchingFile) {
+            console.log(`Không tìm thấy file chính xác: ${fileName}`);
+            console.log(`Sử dụng file thay thế: ${matchingFile}`);
+            
+            // Tạo đường dẫn tương đối từ thư mục gốc uploads
+            const relativePathInUploads = path.join(path.dirname(fileName), matchingFile);
+            
+            res.sendFile(relativePathInUploads, options, (err) => {
+              if (err) {
+                next(err);
+              }
+            });
+            return;
+          }
+        }
+        
+        // Nếu không tìm thấy file phù hợp
+        console.error(`Không tìm thấy file: ${filePath}`);
+        res.status(404).send('File not found');
       }
-    };
-    
-    const fileName = req.url.slice(1); // Remove leading slash
-    res.sendFile(fileName, options, (err) => {
-      if (err) {
-        next(err);
-      }
-    });
+    } catch (error) {
+      console.error('Lỗi khi truy cập tệp:', error);
+      next(error);
+    }
   });
 
   // Upload image API
