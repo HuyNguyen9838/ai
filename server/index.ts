@@ -6,6 +6,9 @@ import * as dotenv from "dotenv";
 // Đọc biến môi trường từ file .env
 dotenv.config();
 
+// Copy biến VITE_GEMINI_API_KEY sang GEMINI_API_KEY để tương thích
+process.env.GEMINI_API_KEY = process.env.VITE_GEMINI_API_KEY;
+
 const app = express();
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
