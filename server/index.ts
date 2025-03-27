@@ -64,11 +64,19 @@ app.use((req, res, next) => {
   // this serves both the API and the client.
   // It is the only port that is not firewalled.
   const port = 5000;
-  server.listen({
-    port,
-    host: "0.0.0.0",
-    reusePort: true,
-  }, () => {
-    log(`serving on port ${port}`);
+  
+  // Kiểm tra xem đang chạy trên Windows hay không
+  const isWindows = process.platform === 'win32';
+  
+  // Sử dụng 'localhost' thay vì '0.0.0.0' cho Windows
+  const host = isWindows ? 'localhost' : '0.0.0.0';
+  
+  // Không sử dụng reusePort trên Windows vì không được hỗ trợ
+  const options = isWindows 
+    ? { port, host }
+    : { port, host, reusePort: true };
+  
+  server.listen(options, () => {
+    log(`serving on ${host}:${port}`);
   });
 })();
