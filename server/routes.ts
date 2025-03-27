@@ -8,7 +8,6 @@ import path from "path";
 import fs from "fs";
 import { fileURLToPath } from "url";
 import { generateTryOnImage as generateGeminiImage, initGeminiAPI } from "./services/gemini";
-import { generateTryOnImage as generateClaudeImage, initClaudeAPI } from "./services/claude";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -21,46 +20,42 @@ const upload = multer({
   },
 });
 
-// Khởi tạo API ngay khi khởi động
-let isClaudeAvailable = initClaudeAPI();
+// Khởi tạo Gemini API ngay khi khởi động
 let isGeminiAvailable = initGeminiAPI();
 
-// AI image generation using available APIs
+// Gemini AI image generation
 async function generateAIImage(clothingItem: any): Promise<string> {
   try {
-    console.log(`Generating image for clothing item ${clothingItem.id} with:
-- Model type: ${clothingItem.modelType}
-- Background: ${clothingItem.backgroundType}
-- Prompt length: ${clothingItem.promptText?.length || 0} characters`);
+    console.log(`Đang tạo hình ảnh cho sản phẩm ${clothingItem.id} với:
+- Loại người mẫu: ${clothingItem.modelType}
+- Nền: ${clothingItem.backgroundType}
+- Độ dài prompt: ${clothingItem.promptText?.length || 0} ký tự`);
 
     let base64Image: string | null = null;
     
-    // Thử sử dụng Claude trước nếu có
-    if (isClaudeAvailable) {
-      try {
-        console.log("Trying to generate image using Claude...");
-        base64Image = await generateClaudeImage(clothingItem);
-        console.log("Successfully generated image with Claude");
-      } catch (claudeError) {
-        console.error("Error generating image with Claude:", claudeError);
-        base64Image = null;
+    // Kiểm tra xem Gemini có sẵn sàng không
+    if (!isGeminiAvailable) {
+      // Thử khởi tạo lại Gemini API nếu chưa sẵn sàng
+      console.log("Gemini API chưa được khởi tạo, đang thử lại...");
+      isGeminiAvailable = initGeminiAPI();
+      
+      if (!isGeminiAvailable) {
+        throw new Error("Không thể khởi tạo Gemini API, vui lòng kiểm tra API key");
       }
     }
     
-    // Nếu Claude không khả dụng hoặc thất bại, thử dùng Gemini
-    if (!base64Image && isGeminiAvailable) {
-      try {
-        console.log("Falling back to Gemini for image generation...");
-        base64Image = await generateGeminiImage(clothingItem);
-        console.log("Successfully generated image with Gemini");
-      } catch (geminiError) {
-        console.error("Error generating image with Gemini:", geminiError);
-        throw geminiError; // Ném lỗi nếu cả hai API đều thất bại
-      }
+    // Sử dụng Gemini để tạo hình ảnh
+    try {
+      console.log("Đang tạo hình ảnh với Gemini API...");
+      base64Image = await generateGeminiImage(clothingItem);
+      console.log("Đã tạo hình ảnh thành công với Gemini");
+    } catch (geminiError) {
+      console.error("Lỗi khi tạo hình ảnh với Gemini:", geminiError);
+      throw geminiError; 
     }
     
     if (!base64Image) {
-      throw new Error("Không nhận được dữ liệu hình ảnh từ bất kỳ API nào");
+      throw new Error("Không nhận được dữ liệu hình ảnh từ Gemini API");
     }
     
     console.log(`Received base64 image data (length: ${base64Image.length} characters)`);

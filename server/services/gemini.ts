@@ -36,9 +36,9 @@ const GEMINI_MODELS = {
   GEMINI_2_0_VISION: {
     modelName: "gemini-2.0-flash-exp-image-generation",
     temperature: 0.4,
-    topP: 1.0,
+    topP: 0.95,
     topK: 32,
-    maxOutputTokens: 2048,
+    maxOutputTokens: 4096,
     responseModalities: ["TEXT", "IMAGE"]
   }
 };
@@ -112,19 +112,78 @@ export async function generateTryOnImage(item: ClothingItem): Promise<string> {
     
     // Get the image file path
     const uploadsDir = path.join(process.cwd(), 'uploads');
-    const imagePath = path.join(uploadsDir, item.originalImage);
+    const origImagePath = path.join(uploadsDir, item.originalImage);
     
-    console.log(`Processing image: ${imagePath}`);
+    console.log(`Processing image: ${origImagePath}`);
     
     // Ensure the file exists
-    if (!fs.existsSync(imagePath)) {
-      throw new Error(`Không tìm thấy tệp hình ảnh: ${imagePath}`);
+    if (!fs.existsSync(origImagePath)) {
+      throw new Error(`Không tìm thấy tệp hình ảnh: ${origImagePath}`);
     }
+    
+    // Tính toán đường dẫn cho ảnh đã được tối ưu hóa
+    const ext = path.extname(origImagePath);
+    const filename = path.basename(origImagePath, ext);
+    const optimizedImagePath = path.join(
+      path.dirname(origImagePath), 
+      `${filename}-optimized${ext}`
+    );
+    
+    try {
+      // Kiểm tra xem đã có ảnh tối ưu chưa, nếu chưa thì tạo mới
+      if (!fs.existsSync(optimizedImagePath)) {
+        // Đảm bảo thư mục tồn tại
+        fs.mkdirSync(path.dirname(optimizedImagePath), { recursive: true });
+        
+        // Thực hiện resize ảnh (đọc tệp gốc)
+        const imageData = fs.readFileSync(origImagePath);
+        const isBigImage = imageData.length > 500 * 1024; // Kiểm tra nếu hơn 500KB
+        
+        if (isBigImage) {
+          // Sử dụng ImageMagick để resize hình ảnh
+          const { execSync } = require('child_process');
+          const maxSize = 800; // Kích thước tối đa
+          
+          try {
+            // Tạo lệnh để resize hình ảnh, duy trì tỉ lệ, giảm chất lượng để giảm kích thước
+            const cmd = `convert "${origImagePath}" -resize ${maxSize}x${maxSize}\\> -quality 85 "${optimizedImagePath}"`;
+            console.log(`Đang tối ưu hóa hình ảnh với lệnh: ${cmd}`);
+            
+            // Thực thi lệnh convert
+            execSync(cmd);
+            
+            console.log(`Đã resize và tối ưu hình ảnh: ${origImagePath} -> ${optimizedImagePath}`);
+          } catch (resizeError) {
+            console.error(`Lỗi khi resize hình ảnh: ${resizeError}`);
+            // Nếu resize lỗi, sử dụng ảnh gốc
+            fs.writeFileSync(optimizedImagePath, imageData);
+          }
+        } else {
+          // Không cần resize, chỉ copy
+          console.log("Kích thước hình ảnh đã phù hợp, không cần tối ưu");
+          fs.writeFileSync(optimizedImagePath, imageData);
+        }
+        
+        console.log(`Đã tạo ảnh tối ưu tại: ${optimizedImagePath}`);
+      } else {
+        console.log(`Sử dụng ảnh tối ưu đã có: ${optimizedImagePath}`);
+      }
+    } catch (error) {
+      // Nếu có lỗi khi tối ưu, sử dụng ảnh gốc
+      console.warn(`Không thể tối ưu hóa ảnh, sử dụng ảnh gốc: ${error}`);
+      // Fallback to original
+      console.log(`Sử dụng ảnh gốc: ${origImagePath}`);
+      // Sử dụng đường dẫn ảnh gốc
+      const imagePath = origImagePath;
+    }
+    
+    // Đường dẫn ảnh cuối cùng (đã tối ưu hoặc gốc)
+    const finalImagePath = fs.existsSync(optimizedImagePath) ? optimizedImagePath : origImagePath;
     
     // Create image part
     const imagePart = fileToGenerativePart(
-      imagePath,
-      item.originalImage.toLowerCase().endsWith('.png') ? 'image/png' : 'image/jpeg'
+      finalImagePath,
+      finalImagePath.toLowerCase().endsWith('.png') ? 'image/png' : 'image/jpeg'
     );
     
     // Create prompt based on user input and image type - optimized for Gemini Pro Vision
@@ -154,11 +213,22 @@ Important:
     
     console.log("Generated prompt:", promptText);
     
-    // Generate the image
-    const result = await model.generateContent([
-      promptText,
-      imagePart
-    ]);
+    console.log("Đang gửi yêu cầu tạo hình ảnh đến Gemini API...");
+    console.log("Đang đợi phản hồi (quá trình này có thể mất 1-2 phút)...");
+    
+    // Thiết lập timeout 5 phút
+    const timeoutPromise = new Promise((_, reject) => {
+      setTimeout(() => reject(new Error("Quá thời gian chờ - Gemini API không phản hồi sau 5 phút")), 5 * 60 * 1000);
+    });
+    
+    // Generate the image with timeout
+    const result = await Promise.race([
+      model.generateContent([
+        promptText,
+        imagePart
+      ]),
+      timeoutPromise
+    ]) as Awaited<ReturnType<typeof model.generateContent>>;
     
     const response = result.response;
     
