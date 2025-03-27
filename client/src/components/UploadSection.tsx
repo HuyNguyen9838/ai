@@ -289,8 +289,14 @@ export default function UploadSection({
                           <SelectItem value="Tự động (mặc định)">Tự động (mặc định)</SelectItem>
                           <SelectItem value="Nữ - Dáng cao">Nữ - Dáng cao</SelectItem>
                           <SelectItem value="Nữ - Dáng trung bình">Nữ - Dáng trung bình</SelectItem>
+                          <SelectItem value="Nữ - Châu Á">Nữ - Châu Á</SelectItem>
+                          <SelectItem value="Nữ - Trẻ trung">Nữ - Trẻ trung</SelectItem>
+                          <SelectItem value="Nữ - Trung niên">Nữ - Trung niên</SelectItem>
                           <SelectItem value="Nam - Dáng cao">Nam - Dáng cao</SelectItem>
                           <SelectItem value="Nam - Dáng trung bình">Nam - Dáng trung bình</SelectItem>
+                          <SelectItem value="Nam - Châu Á">Nam - Châu Á</SelectItem>
+                          <SelectItem value="Nam - Trẻ trung">Nam - Trẻ trung</SelectItem>
+                          <SelectItem value="Nam - Trung niên">Nam - Trung niên</SelectItem>
                         </SelectContent>
                       </Select>
                     </div>
@@ -313,6 +319,13 @@ export default function UploadSection({
                           <SelectItem value="Đô thị">Đô thị</SelectItem>
                           <SelectItem value="Thiên nhiên">Thiên nhiên</SelectItem>
                           <SelectItem value="Trung tính">Trung tính</SelectItem>
+                          <SelectItem value="Bãi biển">Bãi biển</SelectItem>
+                          <SelectItem value="Công viên">Công viên</SelectItem>
+                          <SelectItem value="Phố chính">Phố chính</SelectItem>
+                          <SelectItem value="Quán cà phê">Quán cà phê</SelectItem>
+                          <SelectItem value="Cửa hàng thời trang">Cửa hàng thời trang</SelectItem>
+                          <SelectItem value="Phòng khách">Phòng khách</SelectItem>
+                          <SelectItem value="Sân vườn">Sân vườn</SelectItem>
                         </SelectContent>
                       </Select>
                     </div>

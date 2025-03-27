@@ -63,6 +63,31 @@ export default function ResultsSection({ item, onReset, onRegenerate }: ResultsS
                     className="max-w-full max-h-full object-contain" 
                   />
                 </div>
+                
+                {/* Image details */}
+                <div className="mt-4 bg-white p-4 rounded-lg shadow-sm">
+                  <h4 className="text-sm font-medium text-gray-700 mb-2">Thông tin sản phẩm</h4>
+                  <div className="space-y-1.5 text-sm">
+                    <div className="grid grid-cols-3 gap-1">
+                      <span className="text-gray-500">ID sản phẩm:</span>
+                      <span className="col-span-2 font-medium">{item.id}</span>
+                    </div>
+                    <div className="grid grid-cols-3 gap-1">
+                      <span className="text-gray-500">Kiểu mẫu:</span>
+                      <span className="col-span-2 font-medium">{item.modelType || "Tự động (mặc định)"}</span>
+                    </div>
+                    <div className="grid grid-cols-3 gap-1">
+                      <span className="text-gray-500">Nền:</span>
+                      <span className="col-span-2 font-medium">{item.backgroundType || "Studio (mặc định)"}</span>
+                    </div>
+                    {item.promptText && (
+                      <div className="grid grid-cols-3 gap-1">
+                        <span className="text-gray-500">Lệnh mô tả:</span>
+                        <span className="col-span-2 font-medium">{item.promptText}</span>
+                      </div>
+                    )}
+                  </div>
+                </div>
               </div>
               
               {/* Generated Image */}
@@ -74,6 +99,35 @@ export default function ResultsSection({ item, onReset, onRegenerate }: ResultsS
                     alt="AI generated model wearing the product" 
                     className="max-w-full max-h-full object-contain" 
                   />
+                </div>
+                
+                {/* Generation details */}
+                <div className="mt-4 bg-white p-4 rounded-lg shadow-sm">
+                  <h4 className="text-sm font-medium text-gray-700 mb-2">Thông tin hình ảnh</h4>
+                  <div className="space-y-1.5 text-sm">
+                    <div className="grid grid-cols-3 gap-1">
+                      <span className="text-gray-500">Trạng thái:</span>
+                      <span className="col-span-2">
+                        {item.status === "completed" ? (
+                          <span className="text-green-600 font-medium">Đã hoàn thành</span>
+                        ) : item.status === "processing" ? (
+                          <span className="text-blue-600 font-medium">Đang xử lý</span>
+                        ) : (
+                          <span className="text-red-600 font-medium">Thất bại</span>
+                        )}
+                      </span>
+                    </div>
+                    <div className="grid grid-cols-3 gap-1">
+                      <span className="text-gray-500">Model AI:</span>
+                      <span className="col-span-2 font-medium">Gemini 2.0 Flash Exp</span>
+                    </div>
+                    <div className="grid grid-cols-3 gap-1">
+                      <span className="text-gray-500">Ngày tạo:</span>
+                      <span className="col-span-2 font-medium">
+                        {item.createdAt ? new Date(item.createdAt).toLocaleString('vi-VN') : 'Không có thông tin'}
+                      </span>
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>

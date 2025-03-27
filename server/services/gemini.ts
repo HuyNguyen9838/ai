@@ -202,13 +202,97 @@ Important:
       promptText += `\nCustom instructions: ${item.promptText}\n`;
     }
     
-    // Add model type and background to prompt if they're not default
+    // Enhanced model type processing
     if (item.modelType && item.modelType !== "Tự động (mặc định)") {
-      promptText += `\nModel type: ${item.modelType}`;
+      // Extract demographic details based on model type
+      let gender = "neutral";
+      let body = "";
+      let age = "";
+      let ethnicity = "";
+      
+      if (item.modelType.includes("Nam")) {
+        gender = "male";
+      } else if (item.modelType.includes("Nữ")) {
+        gender = "female";
+      }
+      
+      if (item.modelType.includes("Dáng cao")) {
+        body = "tall";
+      } else if (item.modelType.includes("Dáng trung bình")) {
+        body = "average height";
+      }
+      
+      if (item.modelType.includes("Trẻ trung")) {
+        age = "young adult (20-30 years old)";
+      } else if (item.modelType.includes("Trung niên")) {
+        age = "middle-aged (35-50 years old)";
+      }
+      
+      if (item.modelType.includes("Châu Á")) {
+        ethnicity = "Asian";
+      }
+      
+      // Construct a detailed model description
+      let modelDescription = `Model specifications: ${gender} model`;
+      
+      if (body) {
+        modelDescription += `, ${body}`;
+      }
+      
+      if (age) {
+        modelDescription += `, ${age}`;
+      }
+      
+      if (ethnicity) {
+        modelDescription += `, ${ethnicity} ethnicity`;
+      }
+      
+      promptText += `\n${modelDescription}`;
     }
     
+    // Enhanced background processing
     if (item.backgroundType && item.backgroundType !== "Studio (mặc định)") {
-      promptText += `\nBackground setting: ${item.backgroundType}`;
+      let backgroundDescription = "";
+      
+      switch (item.backgroundType) {
+        case "Bãi biển":
+          backgroundDescription = "a beautiful beach with golden sand and blue ocean waves in the background";
+          break;
+        case "Công viên":
+          backgroundDescription = "a lush green park with trees and walking paths";
+          break;
+        case "Phố chính":
+          backgroundDescription = "a bustling main street with urban architecture in the background";
+          break;
+        case "Quán cà phê":
+          backgroundDescription = "a cozy coffee shop interior with warm lighting and seating areas";
+          break;
+        case "Cửa hàng thời trang":
+          backgroundDescription = "a modern fashion store interior with minimal design";
+          break;
+        case "Phòng khách":
+          backgroundDescription = "a contemporary living room with modern furniture";
+          break;
+        case "Sân vườn":
+          backgroundDescription = "a beautiful garden with flowers and greenery";
+          break;
+        case "Ngoài trời":
+          backgroundDescription = "an outdoor setting with natural light";
+          break;
+        case "Đô thị":
+          backgroundDescription = "an urban cityscape background";
+          break;
+        case "Thiên nhiên":
+          backgroundDescription = "a natural landscape with trees and vegetation";
+          break;
+        case "Trung tính":
+          backgroundDescription = "a neutral, solid color background";
+          break;
+        default:
+          backgroundDescription = item.backgroundType;
+      }
+      
+      promptText += `\nBackground setting: ${backgroundDescription}`;
     }
     
     console.log("Generated prompt:", promptText);
