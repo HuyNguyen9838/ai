@@ -267,7 +267,7 @@ export default function UploadSection({
                 </div>
                 
                 <div className="w-full md:w-1/2 space-y-4">
-                  <h3 className="text-lg font-medium text-gray-800">{file.name}</h3>
+                  <h3 className="text-lg font-medium text-gray-800">{file.name.length > 25 ? `${file.name.substring(0, 25)}...` : file.name}</h3>
                   <p className="text-sm text-gray-500">{formatFileSize(file.size)}</p>
                   
                   <div className="space-y-3">
@@ -285,7 +285,7 @@ export default function UploadSection({
                         <SelectTrigger id="model-type" className="w-full">
                           <SelectValue placeholder="Chọn kiểu mẫu" />
                         </SelectTrigger>
-                        <SelectContent>
+                        <SelectContent className="max-h-[40vh] overflow-auto">
                           <SelectItem value="Tự động (mặc định)">Tự động (mặc định)</SelectItem>
                           <SelectItem value="Nữ - Dáng cao">Nữ - Dáng cao</SelectItem>
                           <SelectItem value="Nữ - Dáng trung bình">Nữ - Dáng trung bình</SelectItem>
@@ -313,7 +313,7 @@ export default function UploadSection({
                         <SelectTrigger id="background-type" className="w-full">
                           <SelectValue placeholder="Chọn loại nền" />
                         </SelectTrigger>
-                        <SelectContent>
+                        <SelectContent className="max-h-[40vh] overflow-auto">
                           <SelectItem value="Studio (mặc định)">Studio (mặc định)</SelectItem>
                           <SelectItem value="Ngoài trời">Ngoài trời</SelectItem>
                           <SelectItem value="Đô thị">Đô thị</SelectItem>
@@ -339,25 +339,25 @@ export default function UploadSection({
                         id="prompt-text"
                         value={promptText}
                         onChange={(e) => setPromptText(e.target.value)}
-                        placeholder="Nhập yêu cầu của bạn cho AI. Ví dụ: Mẫu nữ tóc nâu mặc áo này, đứng trên bãi biển với ánh hoàng hôn."
-                        className="w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 min-h-[100px]"
+                        placeholder="Nhập yêu cầu của bạn cho AI. Ví dụ: Mẫu nữ tóc nâu mặc áo này, đứng trên bãi biển."
+                        className="w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 min-h-[80px]"
                       />
-                      <p className="text-xs text-gray-500 mt-1">Mô tả chi tiết để AI tạo ra hình ảnh chính xác hơn.</p>
+                      <p className="text-xs text-gray-500 mt-1">Mô tả chi tiết để AI tạo ảnh chính xác hơn.</p>
                     </div>
                   </div>
                   
-                  <div className="pt-4 flex gap-3">
+                  <div className="pt-4 flex flex-col sm:flex-row gap-3">
                     <Button
                       type="button"
                       variant="outline"
-                      className="flex-1 py-2 px-4"
+                      className="w-full sm:flex-1 py-2 px-4"
                       onClick={resetForm}
                     >
                       Đổi ảnh
                     </Button>
                     <Button
                       type="button"
-                      className="flex-1 py-2 px-4 bg-blue-500 hover:bg-blue-600 text-white"
+                      className="w-full sm:flex-1 py-2 px-4 bg-blue-500 hover:bg-blue-600 text-white"
                       onClick={handleUpload}
                       disabled={uploadMutation.isPending}
                     >

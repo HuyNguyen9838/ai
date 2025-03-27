@@ -60,6 +60,7 @@ export class MemStorage implements IStorage {
       generatedImage: null,
       modelType: item.modelType || "Tự động (mặc định)",
       backgroundType: item.backgroundType || "Studio (mặc định)",
+      promptText: item.promptText || null,
       status: "pending",
       createdAt: now,
     };

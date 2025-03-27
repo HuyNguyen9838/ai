@@ -9,5 +9,31 @@
 
   body {
     @apply font-sans antialiased bg-background text-foreground;
+    -webkit-tap-highlight-color: transparent;
+  }
+  
+  /* Cải thiện hiển thị và tương tác trên thiết bị di động */
+  input, select, textarea, button {
+    @apply text-base;
+    font-size: 16px !important; /* Ngăn zoom trên iOS khi focus input */
+  }
+  
+  /* Cải thiện trải nghiệm details/summary trên mobile */
+  details > summary {
+    @apply cursor-pointer list-none;
+  }
+  
+  details > summary::-webkit-details-marker {
+    display: none;
+  }
+  
+  details > summary::after {
+    content: '+';
+    @apply ml-2 text-gray-500 transition-all duration-200;
+  }
+  
+  details[open] > summary::after {
+    content: '-';
+    @apply transform rotate-0;
   }
 }
