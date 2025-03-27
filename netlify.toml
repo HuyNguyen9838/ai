@@ -9,6 +9,10 @@
   to = "/.netlify/functions/api/:splat"
   status = 200
   force = true
+  
+[functions]
+  external_node_modules = ["express", "@google/generative-ai"]
+  node_bundler = "esbuild"
 
 [[redirects]]
   from = "/*"
