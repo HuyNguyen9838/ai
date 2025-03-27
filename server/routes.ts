@@ -26,12 +26,25 @@ initGeminiAPI();
 // AI image generation using Gemini API
 async function generateAIImage(clothingItem: any): Promise<string> {
   try {
+    console.log(`Generating image for clothing item ${clothingItem.id} with:
+- Model type: ${clothingItem.modelType}
+- Background: ${clothingItem.backgroundType}
+- Prompt length: ${clothingItem.promptText?.length || 0} characters`);
+    
     // Generate the image using Gemini API
     const base64Image = await generateTryOnImage(clothingItem);
+    
+    if (!base64Image) {
+      throw new Error("Không nhận được dữ liệu hình ảnh từ API");
+    }
+    
+    console.log(`Received base64 image data (length: ${base64Image.length} characters)`);
     
     // Save the generated image
     const fileName = `${Date.now()}_generated.jpg`;
     const imagePath = await storage.saveGeneratedImage(`data:image/jpeg;base64,${base64Image}`, fileName);
+    
+    console.log(`Saved generated image to: ${imagePath}`);
     
     return imagePath;
   } catch (error) {

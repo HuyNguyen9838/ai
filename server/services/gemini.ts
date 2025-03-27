@@ -44,13 +44,13 @@ export async function generateTryOnImage(item: ClothingItem): Promise<string> {
   }
 
   try {
-    // Get the model - using gemini-1.5-pro-vision which supports image generation
+    // Get the model - using gemini-1.5-pro which supports image input
     const model = genAI.getGenerativeModel({ 
-      model: "gemini-1.5-pro",
+      model: "gemini-1.5-pro-vision",
       generationConfig: {
         temperature: 0.9,
         topP: 0.8,
-        maxOutputTokens: 2048,
+        maxOutputTokens: 8192,
       }
     });
     
@@ -72,24 +72,30 @@ export async function generateTryOnImage(item: ClothingItem): Promise<string> {
     );
     
     // Create prompt based on user input and image type
-    let promptText = `You are an AI image generation system. Given a clothing item image, create a photorealistic image of a model wearing this clothing item. Return ONLY a base64 encoded image data as data:image/jpeg;base64,DATA_HERE with no other text or explanation.\n\n`;
+    let promptText = `Task: Create a photorealistic image of a model wearing the clothing item shown in the attached image.
+
+Instructions:
+1. The image should be high resolution, professional quality
+2. The model should be wearing the exact clothing item shown in the input image
+3. Position the model in a natural, catalog-style pose
+4. Make sure the clothing fits properly on the model
+`;
     
     // Add user prompt if provided
     if (item.promptText) {
-      promptText += `User specifications: ${item.promptText}\n\n`;
+      promptText += `\nCustom instructions: ${item.promptText}\n`;
     }
     
     // Add model type and background to prompt if they're not default
     if (item.modelType && item.modelType !== "Tự động (mặc định)") {
-      promptText += `Model should be: ${item.modelType}\n`;
+      promptText += `\nModel type: ${item.modelType}`;
     }
     
     if (item.backgroundType && item.backgroundType !== "Studio (mặc định)") {
-      promptText += `Background should be: ${item.backgroundType}\n`;
+      promptText += `\nBackground setting: ${item.backgroundType}`;
     }
     
-    // Add instructions for high-quality output
-    promptText += "\nMake the image photorealistic, high quality and properly fitted to the model. Output ONLY the base64 image data starting with 'data:image/jpeg;base64,' with no other text, no markdown formatting, and no explanations.";
+    console.log("Generated prompt:", promptText);
     
     // Generate the image
     const result = await model.generateContent([
@@ -98,17 +104,68 @@ export async function generateTryOnImage(item: ClothingItem): Promise<string> {
     ]);
     
     const response = result.response;
-    const text = response.text();
     
-    // Extract the base64 image data from the response
-    const base64Regex = /data:image\/(jpeg|png);base64,([^"]*)/;
-    const matches = text.match(base64Regex);
-    
-    if (matches && matches[2]) {
-      return matches[2];
-    } else {
-      throw new Error("Không tìm thấy dữ liệu hình ảnh trong phản hồi từ Gemini");
+    // Check if there are parts in the response and they include images
+    if (response.candidates && 
+        response.candidates[0] && 
+        response.candidates[0].content && 
+        response.candidates[0].content.parts) {
+      
+      const parts = response.candidates[0].content.parts;
+      
+      // Log parts structure for debugging
+      console.log("Response parts:", JSON.stringify(parts.map(p => ({
+        hasText: 'text' in p,
+        hasInlineData: 'inlineData' in p && p.inlineData ? true : false,
+        mimeType: 'inlineData' in p && p.inlineData ? p.inlineData.mimeType : undefined
+      })), null, 2));
+      
+      // Find image part
+      for (const part of parts) {
+        if (part.inlineData) {
+          const base64Data = part.inlineData.data;
+          
+          if (base64Data) {
+            console.log("Found image data in response");
+            return base64Data;
+          }
+        }
+      }
+      
+      // Also check for text part that might contain base64 data
+      for (const part of parts) {
+        if (part.text) {
+          // Try to extract base64 data from text
+          const base64Regex = /data:image\/(jpeg|png);base64,([^"]*)/;
+          const matches = part.text.match(base64Regex);
+          
+          if (matches && matches[2]) {
+            console.log("Found base64 data in text response");
+            return matches[2];
+          }
+        }
+      }
     }
+    
+    // If we get here, try the text() method as a fallback
+    try {
+      const text = response.text();
+      console.log("Response text length:", text.length);
+      
+      // Extract the base64 image data from the response
+      const base64Regex = /data:image\/(jpeg|png);base64,([^"]*)/;
+      const matches = text.match(base64Regex);
+      
+      if (matches && matches[2]) {
+        console.log("Found base64 data in legacy text response");
+        return matches[2];
+      }
+    } catch (err) {
+      console.error("Error extracting text from response:", err);
+    }
+    
+    // If we get here, no image data was found
+    throw new Error("Không tìm thấy dữ liệu hình ảnh trong phản hồi từ Gemini")
   } catch (error) {
     console.error("Lỗi khi tạo hình ảnh với Gemini:", error);
     throw error;
