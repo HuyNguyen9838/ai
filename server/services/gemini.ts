@@ -3,6 +3,33 @@ import fs from "fs";
 import path from "path";
 import { ClothingItem } from "../../shared/schema";
 
+// Cấu hình model
+type ModelConfig = {
+  modelName: string;
+  temperature: number;
+  topP: number;
+  maxOutputTokens: number;
+};
+
+// Danh sách các mô hình
+const GEMINI_MODELS = {
+  GEMINI_1_5_FLASH: {
+    modelName: "gemini-1.5-flash",
+    temperature: 0.2,
+    topP: 0.8,
+    maxOutputTokens: 2048
+  },
+  GEMINI_1_5_PRO: {
+    modelName: "gemini-1.5-pro",
+    temperature: 0.4,
+    topP: 0.8,
+    maxOutputTokens: 4096
+  }
+};
+
+// Mô hình đang sử dụng - dễ dàng thay đổi nếu cần
+const CURRENT_MODEL = GEMINI_MODELS.GEMINI_1_5_FLASH;
+
 // Initialize Google Generative AI with API key
 let genAI: GoogleGenerativeAI;
 
@@ -31,9 +58,9 @@ function fileToGenerativePart(filePath: string, mimeType: string) {
 }
 
 /**
- * Generate a try-on image using Gemini 2.0
+ * Generate a try-on image using Gemini API
  * 
- * @param item The clothing item
+ * @param item The clothing item with its original image and related information
  * @returns The base64 string of the generated image
  */
 export async function generateTryOnImage(item: ClothingItem): Promise<string> {
@@ -44,15 +71,13 @@ export async function generateTryOnImage(item: ClothingItem): Promise<string> {
   }
 
   try {
-    // Get the model - using gemini-2.0-flash which can edit images
+    // Sử dụng cấu hình mô hình từ thiết lập
     const model = genAI.getGenerativeModel({ 
-      model: "gemini-2.0-flash",
+      model: CURRENT_MODEL.modelName,
       generationConfig: {
-        temperature: 0.2,        // Giảm temperature cho kết quả chính xác hơn
-        topP: 1.0,               // Tăng giá trị topP để mở rộng sáng tạo nhưng vẫn kiểm soát
-        maxOutputTokens: 8192,
-        topK: 40,                // Thêm tham số topK
-        responseStyle: "natural" // Sử dụng phong cách phản hồi tự nhiên
+        temperature: CURRENT_MODEL.temperature,
+        topP: CURRENT_MODEL.topP,
+        maxOutputTokens: CURRENT_MODEL.maxOutputTokens
       }
     });
     
@@ -73,15 +98,15 @@ export async function generateTryOnImage(item: ClothingItem): Promise<string> {
       item.originalImage.toLowerCase().endsWith('.png') ? 'image/png' : 'image/jpeg'
     );
     
-    // Create prompt based on user input and image type - optimized for Gemini 2.0 Flash
-    let promptText = `Turn this floating clothing item into a realistic model wearing it.
+    // Create prompt based on user input and image type - optimized for Gemini Pro Vision
+    let promptText = `Generate a photorealistic image of a person wearing this clothing item. I'd like to see how it would look on a real model.
 
-Instructions:
-1. Create a photorealistic image of a human model wearing this exact clothing item
-2. Add a full-body model underneath the clothing (don't just keep the mannequin/hanging display)
-3. Position the model in a natural fashion catalog pose
-4. Keep the professional studio lighting and clean background
-5. Make sure the clothing item is clearly visible as shown in the original image
+Important: 
+- Return ONLY an image of a human model wearing this clothing item
+- The output must be a standalone jpg/png image
+- Do not include any text descriptions or explanations in your response
+- Generate a new image with a real person wearing exactly this item of clothing
+- Make the final image clear, high-quality, and in a standard fashion catalog style
 `;
     
     // Add user prompt if provided
