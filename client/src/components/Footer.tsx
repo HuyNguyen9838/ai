@@ -9,9 +9,9 @@ export default function Footer() {
           <div>
             <div className="flex items-center space-x-2 text-white mb-4">
               <div className="w-8 h-8 rounded-full bg-gradient-to-r from-purple-500 to-blue-500 flex items-center justify-center text-white font-bold text-sm">AI</div>
-              <h2 className="text-lg font-semibold">AI Virtual Try-On</h2>
+              <h2 className="text-lg font-semibold">AI HN Try-On</h2>
             </div>
-            <p className="mb-4">Công nghệ thử đồ ảo hàng đầu được phát triển với Gemini 2.0 AI, mang đến trải nghiệm mua sắm hoàn toàn mới.</p>
+            <p className="mb-4">Công nghệ thử đồ ảo hàng đầu được phát triển bởi Huy Nguyễn.</p>
             <div className="flex space-x-4">
               <a href="#" className="text-gray-400 hover:text-white transition-colors">
                 <Facebook className="h-5 w-5" />
@@ -59,7 +59,7 @@ export default function Footer() {
         </div>
         
         <div className="border-t border-gray-800 mt-12 pt-8 text-sm text-center">
-          <p>&copy; 2023 AI Virtual Try-On. Tất cả các quyền được bảo lưu.</p>
+          <p>&copy; 2023 AI HN Công nghệ thử đồ ảo hàng đầu được phát triển bởi Huy Nguyễn.</p>
         </div>
       </div>
     </footer>
