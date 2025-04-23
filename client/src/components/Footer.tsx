@@ -11,7 +11,7 @@ export default function Footer() {
               <div className="w-8 h-8 rounded-full bg-gradient-to-r from-purple-500 to-blue-500 flex items-center justify-center text-white font-bold text-sm">AI</div>
               <h2 className="text-lg font-semibold">AI HN Try-On</h2>
             </div>
-            <p className="mb-4">Công nghệ thử đồ ảo hàng đầu được phát triển bởi Huy Nguyễn.</p>
+            <p className="mb-4">Công nghệ thử đồ ảo  được phát triển bởi Huy Nguyễn.</p>
             <div className="flex space-x-4">
               <a href="#" className="text-gray-400 hover:text-white transition-colors">
                 <Facebook className="h-5 w-5" />
@@ -59,7 +59,7 @@ export default function Footer() {
         </div>
         
         <div className="border-t border-gray-800 mt-12 pt-8 text-sm text-center">
-          <p>&copy; 2024 AI HN Công nghệ thử đồ ảo hàng đầu được phát triển bởi Huy Nguyễn.</p>
+          <p>&copy; 2024 AI HN Công nghệ thử đồ ảo được phát triển bởi Huy Nguyễn.</p>
         </div>
       </div>
     </footer>
