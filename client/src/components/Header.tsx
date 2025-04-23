@@ -11,7 +11,7 @@ export default function Header() {
           <div className="w-10 h-10 rounded-full bg-gradient-to-r from-purple-500 to-blue-500 flex items-center justify-center text-white font-bold">
             AI
           </div>
-          <h1 className="text-xl font-semibold text-gray-800">AI Virtual Try-On</h1>
+          <h1 className="text-xl font-semibold text-gray-800">AI Huy Nguyễn</h1>
         </div>
         
         <nav className="hidden md:flex space-x-6">
