@@ -339,7 +339,7 @@ export default function UploadSection({
                         id="prompt-text"
                         value={promptText}
                         onChange={(e) => setPromptText(e.target.value)}
-                        placeholder="Nhập yêu cầu của bạn cho AI. Ví dụ: Mẫu nữ tóc nâu mặc áo này, đứng trên bãi biển."
+                        placeholder="Tính năng này đang phát triển,cứ chọn tạo ngẫu nhiên đi nhaaa."
                         className="w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 min-h-[80px]"
                       />
                       <p className="text-xs text-gray-500 mt-1">Mô tả chi tiết để AI tạo ảnh chính xác hơn.</p>
