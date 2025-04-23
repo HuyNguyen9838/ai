@@ -44,7 +44,7 @@ export default function TestimonialSection() {
     {
       rating: 5,
       content: "\"Công nghệ AI của họ thực sự ấn tượng. Tôi có thể tạo ra hình ảnh quảng cáo chất lượng cao mà không cần thuê studio hoặc người mẫu.\"",
-      name: "Phạm Hồng Hà",
+      name: "Nguyễn Văn Huy",
       position: "Marketer thương hiệu thời trang",
     },
   ];
@@ -52,7 +52,7 @@ export default function TestimonialSection() {
   return (
     <section id="testimonials" className="py-16 bg-white">
       <div className="container mx-auto px-4">
-        <h2 className="text-2xl md:text-3xl font-bold text-center mb-12">Khách hàng nói gì về chúng tôi</h2>
+        <h2 className="text-2xl md:text-3xl font-bold text-center mb-12">Cái này tớ chém gió</h2>
         
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {testimonials.map((testimonial, index) => (
