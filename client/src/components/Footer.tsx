@@ -59,7 +59,7 @@ export default function Footer() {
         </div>
         
         <div className="border-t border-gray-800 mt-12 pt-8 text-sm text-center">
-          <p>&copy; 2023 AI HN Công nghệ thử đồ ảo hàng đầu được phát triển bởi Huy Nguyễn.</p>
+          <p>&copy; 2024 AI HN Công nghệ thử đồ ảo hàng đầu được phát triển bởi Huy Nguyễn.</p>
         </div>
       </div>
     </footer>
