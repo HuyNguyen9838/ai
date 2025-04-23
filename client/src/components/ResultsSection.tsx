@@ -30,7 +30,7 @@ export default function ResultsSection({ item, onReset, onRegenerate }: ResultsS
     try {
       if (navigator.share) {
         await navigator.share({
-          title: 'AI Virtual Try-On',
+          title: 'AI HN',
           text: 'Xem ảnh thử đồ ảo được tạo bởi AI!',
           url: window.location.href,
         });
