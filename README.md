@@ -91,4 +91,4 @@ NODE_ENV=production
 
 ## Liên hệ
 
-Nếu có bất kỳ câu hỏi hoặc đề xuất nào, vui lòng liên hệ qua email: [your-email@example.com](mailto:giahuy0738@gmail.com)
+Nếu có bất kỳ câu hỏi hoặc đề xuất nào, vui lòng liên hệ qua email: [giahuy0738@gmai.com](mailto:giahuy0738@gmail.com)
