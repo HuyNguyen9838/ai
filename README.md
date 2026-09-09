@@ -71,7 +71,6 @@ API backend sẽ được chạy dưới dạng Netlify Functions, đảm bảo 
 
 ## Môi trường và API
 
-Ứng dụng sử dụng API Gemini 2.0 từ Google để tạo hình ảnh. Bạn cần có API key hợp lệ để ứng dụng hoạt động chính xác.
 
 ### Cấu hình biến môi trường
 
