@@ -86,9 +86,9 @@ NODE_ENV=production
 
 - **Frontend**: React, Tailwind CSS, Shadcn UI
 - **Backend**: Node.js, Express
-- **AI**: Google Gemini 2.0 API (gemini-2.0-flash-exp-image-generation)
+- **AI**: Google Gemini 3.0 API (gemini-3.0-flash-exp-image-generation)
 - **Khác**: TypeScript, Vite, Drizzle ORM
 
 ## Liên hệ
 
-Nếu có bất kỳ câu hỏi hoặc đề xuất nào, vui lòng liên hệ qua email: [your-email@example.com](mailto:your-email@example.com)
+Nếu có bất kỳ câu hỏi hoặc đề xuất nào, vui lòng liên hệ qua email: [your-email@example.com](mailto:giahuy0738@gmail.com)
